@@ -27,8 +27,13 @@ public class Account {
 		this.balance += depositAmount;
 	}
 
-	public void withdraw(double withdrawAmount) {
-		this.balance -= withdrawAmount;
+	public void withdraw(double withdrawAmount) throws Exception {
+		// Throw an exception if balance would drop below 0
+		if (this.balance - withdrawAmount < 0) {
+			throw new IllegalArgumentException( "No negative balance allowed!" );
+		} else {
+			this.balance -= withdrawAmount;
+		}
 	}
 
 	public double getBalance() {

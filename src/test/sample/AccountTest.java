@@ -13,46 +13,60 @@ import main.sample.Account;
 
 class AccountTest {
 
+	private static Account account;
+	private static final float INITIAL_ACCOUNT_BALANACE = 5000;
+
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
+		System.out.println("Create account.");
+		account = new Account(INITIAL_ACCOUNT_BALANACE);
 	}
 
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
+//	@AfterAll
+//	static void tearDownAfterClass() throws Exception {
+//	}
 
 	@BeforeEach
 	void setUp() throws Exception {
+		account.setBalance(INITIAL_ACCOUNT_BALANACE);
 	}
 
-	@AfterEach
-	void tearDown() throws Exception {
-	}
-	
+//	@AfterEach
+//	void tearDown() throws Exception {
+//	}
+
 	@Test
-	public void testAssetNotNull() {
-		assertNotNull(new Object(), "Objekt sollte nicht null sein");
+	@DisplayName("Abfrage des Kontostands liefert den richtigen Betrag")
+	public void testAccountBalance() {
+		double balanceBefore = account.getBalance();
+		account.deposit(0);
+		assertEquals(balanceBefore, account.getBalance());
 	}
-	
+
 	@Test
-	public void testAssetNotSame() {
-		assertNotSame(new Object(), new Object(), "Die zwei Objekte sollten nicht identisch sein");
+	@DisplayName("Zwei Einzahlungen werden als Summe gebucht")
+	public void depositTest() {
+		account.deposit(500);
+		account.deposit(200);
+		assertEquals(INITIAL_ACCOUNT_BALANACE + 500 + 200, account.getBalance());
 	}
-	
-	@Test
-	public void testAssetNull() {
-		assertNull(null, "Sollte null sein");
-	}
-	
+
 	@Test
 	@DisplayName("Einzahlung von 0 ändert nicht den Kontostand")
 	public void depositZeroTest() {
-		//arrange
-		Account account = new Account(0);
+		// arrange
 		double balanceBefore = account.getBalance();
-		//act
+		// act
 		account.deposit(0);
-		//assert
+		// assert
 		assertEquals(balanceBefore, account.getBalance());
+	}
+
+	@Test
+	@DisplayName("Mehr Geld abheben als auf Konto vorhanden")
+	public void tooLowBalanceTest() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			account.withdraw(account.getBalance() + 1);
+		});
 	}
 }
